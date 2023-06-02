@@ -1,71 +1,59 @@
-import React, { useState } from "react";
-import { capitalizeFirstLetter } from "../../utils/helpers";
-import About from "..";
+import React from "react";
+import { render, cleanup } from "@testing-library/react";
+import "@testing-library/jest-dom/extend-expect";
+import Nav from "..";
 
-function Nav() {
-const [currentCategory, setCurrentCategory] = useState(categories[0]);
-const [categories] = useState([
-  {
-    name: 'commercial',
-    description: 'Photos of grocery stores, food trucks, and other commercial projects',
-  },
-  { name: 'portraits', description: 'Portraits of people in my life' },
-  { name: 'food', description: 'Delicious delicacies' },
-  { name: 'landscape', description: 'Fields, farmhouses, waterfalls, and the beauty of nature' },
-]);
+afterEach(cleanup);
 
-  return (
-    <header className="flex-row px-1">
-      <h2>
-        <a data-testid="link" href="/">
-          <span role="img" aria-label="camera">
-            {" "}
-            📸
-          </span>{" "}
-          Oh Snap!
-        </a>
-      </h2>
-      <nav>
-        <ul className="flex-row">
-          <li className="mx-2">
-            <a
-              href="#about"
-            >
-              About me
-            </a>
-          </li>
-          <li>
-            <span>Contact</span>
-          </li>
-          {categories.map((category) => (
-            <li className={`mx-1 ${
-                currentCategory.name === category.name && 'navActive'
-                }`} key={category.name}>
-              <span
-                onClick={() => {
-                  setCurrentCategory(category)
-                }}
-              >
-                {capitalizeFirstLetter(category.name)}
-              </span>
-            </li>
-          ))}
-        </ul>
-      </nav>
-    </header>
-  );
-}
-
-afterEach (cleanup);
-
-describe('About component', () => {
-    // renders About test
-    it('renders', () => {
-        render(<About />);
+describe("Nav component", () => {
+    //baseline test
+    it("renders", () => {
+        render(<Nav />);
     });
+    //snapshot test
+    it("matches snapshot", () => {
+        const { asFragment } = render(<Nav />);
+        // assert value comparison
+        expect(asFragment()).toMatchSnapshot();
+    }
+    )
+})
 
-    // second test
+describe("emoji is visible", () => {
+    it("inserts emoji into the h2", () => {
+        // Arrange
+        const { getByLabelText } = render(<Nav />);
+        // Assert
+        expect(getByLabelText("camera")).toHaveTextContent("📸");
+    })
+})
 
-});
+describe('emoji is visible', () => {
+    it('inserts emoji into the h2', () => {
+    const { getByLabelText } = render(<Nav />);
+  
+    expect(getByLabelText('camera')).toHaveTextContent('📸');
+    });
+  })  
 
-export default Nav;
+describe("links are visible", () => {
+    it("inserts text into the links", () => {
+        // Arrange
+        const { getByTestId } = render(<Nav />);
+        // Assert
+        expect(getByTestId("link")).toHaveTextContent("Oh Snap!");
+        expect(getByTestId("about")).toHaveTextContent("About me");
+    })
+})
+const { getByTestId } = render(<Nav />);
+
+describe('links are visible', () => {
+    it('inserts text into the links', () => {
+    // Arrange
+    // Assert
+    expect(getByTestId('link')).toHaveTextContent('Oh Snap!');
+    expect(getByTestId('about')).toHaveTextContent('About me');
+    });
+  })
+
+  
